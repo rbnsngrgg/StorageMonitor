@@ -121,21 +121,29 @@ namespace RectImagesMonitor
                     }
                     if (folderAgeDays >= monitor.FilesOlderThanDays)
                     {
-                        if (monitor.DisposalMethod == "Delete")
-                        { 
-                            if(Verbose)
-                            {
-                                Log($"\t\t\t\tDeleting {folder}");
-                            }
-                            Directory.Delete(folder, true); 
-                        }
-                        else
+                        try
                         {
-                            if (Verbose)
+                            if (monitor.DisposalMethod == "Delete")
                             {
-                                Log($"\t\t\t\tMoving {folder} to {monitor.FileMoveLocation}");
+                                if (Verbose)
+                                {
+                                    Log($"\t\t\t\tDeleting {folder}");
+                                }
+                                if (folder.EndsWith(" ")) { Directory.Delete($@"{folder}\", true); }
+                                else { Directory.Delete(folder, true); }
                             }
-                            Directory.Move(folder, monitor.FileMoveLocation);
+                            else
+                            {
+                                if (Verbose)
+                                {
+                                    Log($"\t\t\t\tMoving {folder} to {monitor.FileMoveLocation}");
+                                }
+                                Directory.Move(folder, monitor.FileMoveLocation);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log(ex.Message);
                         }
                     }
                 }
@@ -151,21 +159,28 @@ namespace RectImagesMonitor
                     }
                     if (fileAgeDays >= monitor.FilesOlderThanDays)
                     {
-                        if (monitor.DisposalMethod == "Delete")
+                        try
                         {
-                            if (Verbose)
+                            if (monitor.DisposalMethod == "Delete")
                             {
-                                Log($"\t\t\t\tDeleting {file}");
+                                if (Verbose)
+                                {
+                                    Log($"\t\t\t\tDeleting {file}");
+                                }
+                                File.Delete(file);
                             }
-                            File.Delete(file);
+                            else
+                            {
+                                if (Verbose)
+                                {
+                                    Log($"\t\t\t\tMoving {file} to {monitor.FileMoveLocation}");
+                                }
+                                File.Move(file, monitor.FileMoveLocation);
+                            }
                         }
-                        else
+                        catch(Exception ex)
                         {
-                            if (Verbose)
-                            {
-                                Log($"\t\t\t\tMoving {file} to {monitor.FileMoveLocation}");
-                            }
-                            File.Move(file, monitor.FileMoveLocation);
+                            Log(ex.Message);
                         }
                     }
                 }
